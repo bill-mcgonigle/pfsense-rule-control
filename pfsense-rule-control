@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+# 
+# Copyright 2017 Ed Lawford <ed.lawford@db.com>
+# Modified 2020-06-08 Bill McGonigle <bill@bfccomputing.com>, changes WTFPL2.0
+#
+# Command-line control for pfSense firewall rules
+# Uses FauxAPI: https://github.com/ndejong/pfsense_fauxapi
+# 
+
+import pprint, sys
+from PfsenseFauxapi.PfsenseFauxapi import PfsenseFauxapi
+
+def usage():
+    print('usage: ' + sys.argv[0] + ' <list|enable|disable> <rule name> (rule prefix is: ' + rule_prefix + ' )')
+    sys.exit(1)
+
+# Configuration
+api_hostname     = "pfsense-a.example.com"
+api_key          = "my-api-key"
+api_secret       = "my-api-secret"
+rule_prefix      = "auto_"
+api_verify_certs = True
+api_debug        = False
+
+if (len(sys.argv) == 1):
+    usage()
+    
+rule_action = sys.argv[1]
+
+if( rule_action != "list" ):
+  if ( len(sys.argv) != 3 ):
+    usage()
+  else:
+    rule_name = sys.argv[2]
+
+PfsenseFauxapi = PfsenseFauxapi(api_hostname, api_key, api_secret, use_verified_https=api_verify_certs, debug=api_debug)
+
+filters = PfsenseFauxapi.config_get('filter')
+
+i = 0
+matched = False
+changed = False
+for rule in filters['rule']:
+    if (rule_action == 'list'):
+        if (rule_prefix in rule['descr']):
+            is_enabled = 'ENABLED'
+            if 'disabled' in filters['rule'][i]:
+                is_enabled = 'DISABLED'
+            print( rule['descr'] + ' : ' + is_enabled )
+    else :
+        if ( ( rule_name.startswith(rule_prefix) and rule_name in rule['descr'] ) or
+             ( rule_prefix + rule_name) in rule['descr'] ):
+            matched = True
+            if api_debug:
+                pprint.pprint(filters['rule'][i])
+            if (rule_action == "enable"):
+                if 'disabled' in filters['rule'][i]:
+                    del filters['rule'][i]['disabled']
+                    changed = True
+                else:
+                    if api_debug:
+                        print ("Rule wasn't disabled, tho.")
+                if api_debug:
+                    print ("Rule {} enabled.".format(rule['descr']))
+            elif (rule_action == "disable"):
+                if 'disabled' not in filters['rule'][i]:
+                  filters['rule'][i]['disabled'] = ""
+                  changed = True
+                if api_debug:
+                    print ("Rule {} disabled.".format(rule['descr']))
+            if (changed == True):
+                # Push the config back to pfSense
+                filters = PfsenseFauxapi.config_set(filters, 'filter')
+                # Reload the config
+                PfsenseFauxapi.send_event("filter reload")
+    i=i+1
+
+if (rule_action != "list" and matched == False):
+    print ("No rule matched")
+
