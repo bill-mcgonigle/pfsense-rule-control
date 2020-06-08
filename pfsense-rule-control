@@ -1,22 +1,38 @@
 #!/usr/bin/python3
 # 
 # Copyright 2017 Ed Lawford <ed.lawford@db.com>
-# Modified 2020-06-08 Bill McGonigle <bill@bfccomputing.com>, changes WTFPL2.0
+# Modified 2020-06-08 Bill McGonigle <bill@bfccomputing.com>, changes WTFPL2
 #
 # Command-line control for pfSense firewall rules
 # Uses FauxAPI: https://github.com/ndejong/pfsense_fauxapi
 # 
 
 import pprint, sys
+import configparser
+import io
+from pathlib import Path
 from PfsenseFauxapi.PfsenseFauxapi import PfsenseFauxapi
 
-# Configuration
-api_hostname     = "pfsense-a.example.com"
-api_key          = "my-api-key"
-api_secret       = "my-api-secret"
-rule_prefix      = "auto_"
-api_verify_certs = True
-api_debug        = False
+home = str(Path.home())
+
+script_name = sys.argv[0]
+config_file = script_name + '.ini' # too bad YAML isn't in python3's stdlib
+config_paths = [ '/usr/local/etc/' + config_file,
+                 '/etc/' + config_file,
+                 home + '/.' + config_file
+               ]
+
+config = configparser.ConfigParser()
+config.read(config_paths)
+
+# this can control multiple firewalls some day
+for section in config.sections():
+    api_hostname     = section
+    api_key          = config.get(section,'api_key')
+    api_secret       = config.get(section,'api_secret')
+    rule_prefix      = config.get(section,'rule_prefix')
+    api_verify_certs = config.getboolean(section,'api_verify_certs')
+    api_debug        = config.getboolean(section,'api_debug')
 
 def usage():
     print('usage: ' + sys.argv[0] + ' <list|enable|disable> <rule name> (rule prefix is: ' + rule_prefix + ' )')
