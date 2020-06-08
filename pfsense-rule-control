@@ -10,18 +10,17 @@
 import pprint, sys
 import configparser
 import io
+import os
 from pathlib import Path
 from PfsenseFauxapi.PfsenseFauxapi import PfsenseFauxapi
 
 home = str(Path.home())
-
-script_name = sys.argv[0]
+path, script_name = os.path.split(sys.argv[0])
 config_file = script_name + '.ini' # too bad YAML isn't in python3's stdlib
 config_paths = [ '/usr/local/etc/' + config_file,
                  '/etc/' + config_file,
                  home + '/.' + config_file
                ]
-
 config = configparser.ConfigParser()
 config.read(config_paths)
 
