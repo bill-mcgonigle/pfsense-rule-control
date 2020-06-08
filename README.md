@@ -26,7 +26,7 @@ Examples of usage:
 
 `list` will tell you which rules are controllable (based on finding the prefix) and their current state.
 
-`enable` and `disable` take a rule name, with or without the prefix and enable or disable it.  If the state changes it reloads the firewall (that is, if you enable an enabled rule, or disable a disabled rule it will just do nothing).
+`enable` and `disable` take a rule name, with or without the prefix, and enable or disable it.  If the state changes it reloads the firewall (that is, if you enable an enabled rule, or disable a disabled rule it will just do nothing).
 
 For example:
 
@@ -34,10 +34,14 @@ For example:
 
 If you provide too few parameters it will print some usage help (and remind you about the current prefix).
 
-You can easily add calls to this script to a cron.d file.
+You can easily add calls to this script to a cron.d file.  e.g.
+
+`0 22 * * * nobody /usr/local/bin/pfsense-rule-control enable block_bob`
+
+(good night, Bob!)
 
 ## TODO
 
 Error handling!
 
-See if this can run ON the firewall?  Is python3 available on pfSense?
+See if this can run ON the firewall?  Is python3 available on pfSense?  No reason localhost shouldn't be a valid destination (some things can't be done with pfSense schedules).
