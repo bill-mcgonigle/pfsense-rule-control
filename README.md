@@ -12,17 +12,17 @@ Adjust the variables to specify your hostname and credentials and your preferred
 
 ### pfSense Firewall
 Requires:
-- pfSense 2.3 or greater.
-- FauxAPI (https://github.com/ndejong/pfsense_fauxapi)
+- pfSense 2.3 or greater (tested in 2020 on 2.4.5)
+- FauxAPI pfSense package (https://github.com/ndejong/pfsense_fauxapi)
 
 ## Usage
 Examples of usage:
 
-`pfsense-firewall-control <list|enable|disable> rule_name`
+`pfsense-rule-control <list|enable|disable> rule_name`
 
 `list` will tell you which rules are controlable (based on finding the prefix).
 
-`enable` and disable take a rule name, with or with the prefix and enable or disable it.  If the state changes it reloads the firewall.
+`enable` and `disable` take a rule name, with or without the prefix and enable or disable it.  If the state changes it reloads the firewall (that is if you enable an enabled rule, or disable a disabled rule it will just do nothing.
 
 If you provide too few parameters it will print some usage help (with the current prefix).
 
