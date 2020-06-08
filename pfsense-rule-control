@@ -10,10 +10,6 @@
 import pprint, sys
 from PfsenseFauxapi.PfsenseFauxapi import PfsenseFauxapi
 
-def usage():
-    print('usage: ' + sys.argv[0] + ' <list|enable|disable> <rule name> (rule prefix is: ' + rule_prefix + ' )')
-    sys.exit(1)
-
 # Configuration
 api_hostname     = "pfsense-a.example.com"
 api_key          = "my-api-key"
@@ -21,6 +17,10 @@ api_secret       = "my-api-secret"
 rule_prefix      = "auto_"
 api_verify_certs = True
 api_debug        = False
+
+def usage():
+    print('usage: ' + sys.argv[0] + ' <list|enable|disable> <rule name> (rule prefix is: ' + rule_prefix + ' )')
+    sys.exit(1)
 
 if (len(sys.argv) == 1):
     usage()
