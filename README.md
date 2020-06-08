@@ -24,7 +24,7 @@ Examples of usage:
 
 `pfsense-rule-control <list|enable|disable> rule_name`
 
-`list` will tell you which rules are controlable (based on finding the prefix).
+`list` will tell you which rules are controllable (based on finding the prefix) and their current state.
 
 `enable` and `disable` take a rule name, with or without the prefix and enable or disable it.  If the state changes it reloads the firewall (that is, if you enable an enabled rule, or disable a disabled rule it will just do nothing).
 
